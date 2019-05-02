@@ -28,6 +28,7 @@ var filter = 'img[data-shortcode="image"]';
          * @param {Object} ed
          */
         init: function init(ed) {
+
             var insertTitle = i18n._t(
                 "AssetAdmin.INSERT_FROM_FILES",
                 "Insert from Files"
@@ -37,31 +38,31 @@ var filter = 'img[data-shortcode="image"]';
 
             var contextTitle = i18n._t("AssetAdmin.FILE", "File");
 
-            ed.addButton("semantic-image", {
+            ed.addButton("semanticimage", {
                 title: insertTitle,
                 icon: "image",
-                cmd: "semantic-image",
+                cmd: "semanticimage",
                 stateSelector: filter
             });
-            ed.addMenuItem("semantic-image", {
+            ed.addMenuItem("semanticimage", {
                 text: contextTitle,
                 icon: "image",
-                cmd: "semantic-image"
+                cmd: "semanticimage"
             });
-            ed.addButton("semantic-imageedit", {
+            ed.addButton("semanticimageedit", {
                 title: editTitle,
                 icon: "editimage",
-                cmd: "semantic-image"
+                cmd: "semanticimage"
             });
             ed.addContextToolbar(function (img) {
                 return ed.dom.is(img, filter);
-            }, "alignleft aligncenter alignright | semantic-imageedit");
-            ed.addCommand("semantic-image", function () {
+            }, "alignleft aligncenter alignright | semanticimageedit");
+            ed.addCommand("semanticimage", function () {
                 // See HtmlEditorField.js
                 jQuery("#" + ed.id)
                     .entwine("ss")
                     .openMediaDialog();
-            }); // Replace the mceAdvImage and mceImage commands with the semantic-image command
+            }); // Replace the mceAdvImage and mceImage commands with the semanticimage command
 
             ed.on("BeforeExecCommand", function (e) {
                 var cmd = e.command;
@@ -70,7 +71,7 @@ var filter = 'img[data-shortcode="image"]';
 
                 if (cmd === "mceAdvImage" || cmd === "mceImage") {
                     e.preventDefault();
-                    ed.execCommand("semantic-image", ui, val);
+                    ed.execCommand("semanticimage", ui, val);
                 }
             });
             ed.on("SaveContent", function (o) {
@@ -114,8 +115,6 @@ var filter = 'img[data-shortcode="image"]';
 
                 var match = _ShortcodeSerialiser.match("image", false, content);
 
-                console.log(match);
-
                 while (match) {
                     var attrs = match.properties;
                     var el = jQuery("<img/>")
@@ -142,8 +141,8 @@ var filter = 'img[data-shortcode="image"]';
         }
     }; // Adds the plugin class to the list of available TinyMCE plugins
 
-    tinymce.PluginManager.add("semantic-image", function (editor) {
-        return semantic-image.init(editor);
+    tinymce.PluginManager.add("semanticimage", function (editor) {
+        return semanticimage.init(editor);
     });
 })();
 
@@ -345,7 +344,7 @@ jQuery.entwine("ss", function ($) {
          */
         getAttributes: function getAttributes() {
             var data = this.getData();
-            return {
+            var attribs = {
                 src: data.url,
                 alt: data.AltText,
                 width: data.Width,
@@ -355,6 +354,8 @@ jQuery.entwine("ss", function ($) {
                 "data-id": data.ID,
                 "data-shortcode": "image"
             };
+
+            return attribs;
         },
 
         /**
@@ -438,7 +439,22 @@ jQuery.entwine("ss", function ($) {
 
             var node = $(editor.getSelectedNode()); // Get the attributes & extra data
 
+            // $cmsConfig->setOption('silverstripe_wysiswg_config', [
+            //     'template' => $arrayData->renderWith('semantic_image'),
+            //     'classes' => [
+            //         'left' => 'u-left',
+            //         'right' => 'u-right'
+            //     ]
+            // ]);
             var attrs = this.getAttributes();
+            var settings = editor.getConfig().silverstripe_wysiswg_config;
+
+            if(settings.classes){
+                attrs.class = attrs.class.split(/\s+/).map(function(klass) {
+                    return klass + " " + settings.classes[klass] || "";
+                }).join(' ');
+            }
+
             var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
             // or nothing (if creating)
 
@@ -446,7 +462,7 @@ jQuery.entwine("ss", function ($) {
             if (replacee && replacee.parent().is(".captionImage"))
                 replacee = replacee.parent(); // Find the img node - either the existing img or a new one, and update it
 
-            var img = node && node.is("img") ? node : $("<img />");
+            var img = node && node.is("img") ? node : $(settings.elements && settings.elements.image || "<img />");
             img.attr(attrs).addClass("ss-htmleditorfield-file image"); // Any existing figure or caption node
 
             var container = img.parent(".captionImage");
@@ -454,20 +470,20 @@ jQuery.entwine("ss", function ($) {
 
             if (extraData.CaptionText) {
                 if (!container.length) {
-                    container = $("<figure></figure>");
+                    container = $(settings.elements && settings.elements.wrapper || "<figure></figure>");
                 }
 
                 container
-                    .attr("class", "captionImage send-it " + attrs.class)
+                    .attr("class", "captionImage " + attrs.class + " " + settings.classes.wrapper)
                     .removeAttr("data-mce-style")
                     .width(attrs.width);
 
                 if (!caption.length) {
-                    caption = $('<figcaption class="caption"></figcaption>').appendTo(container);
+                    caption = $(settings.elements && settings.elements.caption || '<figcaption class="caption"></figcaption>').appendTo(container);
                 }
 
                 caption
-                    .attr("class", "caption " + attrs.class)
+                    .attr("class", "caption " + settings.classes.caption)
                     .text(extraData.CaptionText);
             } else {
                 // Otherwise forget they exist
@@ -487,13 +503,13 @@ jQuery.entwine("ss", function ($) {
                 container.prepend(img);
             } // If we don't have a replacee, then we need to insert the whole HTML
 
-            container.find('.leftAlone').addClass('senoooooo');
+            // container.find('.leftAlone').addClass('senoooooo');
 
             if (!replacee) {
                 // Otherwise insert the whole HTML content
                 editor.repaint();
                 editor.insertContent(
-                    $("<figure />")
+                    $("<div />")
                         .append(replacer)
                         .html(),
                     {
