@@ -1,36 +1,6 @@
 # what can this thing do
 
-- Downloads your facebook, instagram or twitter feed and puts it somewhere of your choosing in your site tree
-- Shares the current page to facebook or twitter when you save it (WIP).
-- Improves the Page meta data with twitter, open graph and micro data
-- Provides a number of new tokens to the page template for generating things like share urls
-
-
-## meta data
-
-Include the `Meta` partial in your page template e.g.:
-
-````html
-<head>
-
-	<% base_tag %>
-	<title>$Meta('Title')</title>
-
-	<%-- meta data --%>
-	<% include Meta %>
-````
-
-
-## todo
-
-- DOCS!!!
-- Cleanup the unnecessary manual management of twitter username and fb page url - these should be generated from the oauth data / page / user ids
-- Need clear setup instructions for each social network
-- Instagram push
-- Common update behaviour should go into an extension
-- Code Cleanup
-- config.yml
-
+not much yet
 
 License
 -------
