@@ -468,11 +468,11 @@ jQuery.entwine("ss", function ($) {
             var container = img.parent(".captionImage");
             var caption = container.find(".caption"); // If we've got caption text, we need a wrapping div.captionImage and sibling p.caption
 
-            if (extraData.CaptionText) {
-                if (!container.length) {
-                    container = $(settings.elements && settings.elements.wrapper || "<figure></figure>");
-                }
+            if (!container.length) {
+                container = $(settings.elements && settings.elements.wrapper || "<figure></figure>");
+            }
 
+            if (extraData.CaptionText) {
                 container
                     .attr("class", "captionImage " + attrs.class + " " + settings.classes.wrapper)
                     .removeAttr("data-mce-style")
@@ -500,7 +500,8 @@ jQuery.entwine("ss", function ($) {
             // happened
 
             if (container) {
-                container.prepend(img);
+
+                container.find('picture').prepend(img);
             } // If we don't have a replacee, then we need to insert the whole HTML
 
             // container.find('.leftAlone').addClass('senoooooo');

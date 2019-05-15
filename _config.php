@@ -19,25 +19,25 @@ $cmsConfig::get('cms')->enablePlugins([
     'semanticimage' => $module->getResource('js/semantic-image.js')
 ]);
 
-$cmsConfig->setOption('extended_valid_elements', ['figure','figcaption']);
+$cmsConfig->setOption('extended_valid_elements', ['figure','figcaption','picture']);
 $arrayData = new SilverStripe\View\ArrayData();
 $cmsConfig->setOption('silverstripe_wysiswg_config', [
     'template' => $arrayData->renderWith('semantic_image'),
 
     "elements" => [
-        "wrapper" => "<figure></figure>",
-        "caption" => "<figcaption class='caption'></figcaption>",
+        "wrapper" => "<figure class='c-picture'><picture class='c-picture__item'></picture></figure>",
+        "caption" => "<figcaption></figcaption>",
         "image" => "<img />"
     ],
 
     'classes' => [
-        'left' => 'u-left',
-        'leftAlone' => 'u-left u-alone',
-        'right' => 'u-right',
-        'rightAlone' => 'u-right u-alone',
+        'left' => 'c-picture--left',
+        'leftAlone' => 'c-picture--left-offset',
+        'right' => 'c-picture--right',
+        'rightAlone' => 'c-picture--rigth-offset',
 
-        'wrapper' => 'c-image',
-        'caption' => 'c-image-caption'
+        'wrapper' => 'c-picture',
+        'caption' => ''
     ]
 ]);
 
