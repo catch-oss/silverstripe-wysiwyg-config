@@ -1,9 +1,0 @@
----
-Name: catch-silverstripe-wysiwyg-routes
----
-SilverStripe\Control\Director:
-  rules:
-    TwitterAuthenticator: Azt3k\SS\Social\Controllers\TwitterAuthenticator
-    FBAuthenticator: Azt3k\SS\Social\Controllers\FBAuthenticator
-    InstagramAuthenticator: Azt3k\SS\Social\Controllers\InstagramAuthenticator
-    abc-social-admin: Azt3k\SS\Social\Controllers\SocialAdmin
