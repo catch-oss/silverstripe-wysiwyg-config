@@ -25,19 +25,28 @@ $cmsConfig->setOption('silverstripe_wysiswg_config', [
     'template' => $arrayData->renderWith('semantic_image'),
 
     "elements" => [
-        "wrapper" => "<figure class='c-picture'><picture class='c-picture__item'></picture></figure>",
-        "caption" => "<figcaption></figcaption>",
-        "image" => "<img />"
+        "container" => "
+            <figure class='c-picture {{ classes }}' data-id='{{data-id}}' data-shortcode='{{data-shortcode}}' >
+                <picture class='c-picture__item'>
+                    <img src='{{src}}' title='{{title}}' alt='{{alt}}/>
+                </picture>
+                <figcaption class=''>
+                    {{caption}}
+                </figcaption>
+            </figure>
+        "
     ],
 
     'classes' => [
         'left' => 'c-picture--left',
         'leftAlone' => 'c-picture--left-offset',
         'right' => 'c-picture--right',
-        'rightAlone' => 'c-picture--rigth-offset',
+        'rightAlone' => 'c-picture--right-offset',
+    ],
 
-        'wrapper' => 'c-picture',
-        'caption' => ''
+    'selectors' => [
+        'wrapper' => '.c-picture',
+        'caption' => 'figcaption'
     ]
 ]);
 

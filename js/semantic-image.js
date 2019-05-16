@@ -266,11 +266,15 @@ jQuery.entwine("ss", function ($) {
          * @returns {object}
          */
         getOriginalAttributes: function getOriginalAttributes() {
+            console.log('asdasd');
             var $field = this.getElement();
 
             if (!$field) {
                 return {};
             }
+
+            var editor = $field.getEditor();
+            var settings = editor.getConfig().silverstripe_wysiswg_config;
 
             var node = $field.getEditor().getSelectedNode();
 
@@ -278,7 +282,16 @@ jQuery.entwine("ss", function ($) {
                 return {};
             }
 
-            var $node = $(node); // Handler for if the selection is a link instead of image media
+            var $node = $(node);
+            var $parent = $node; // Handler for if the selection is a link instead of image media
+
+            if (!$node.is(settings.selectors.wrapper)) {
+                var p = $node.parents(settings.selectors.wrapper);
+                if(p){
+                    $parent = p;
+                }
+
+            }
 
             var hrefParts = ($node.attr("href") || "").split("#");
 
@@ -302,16 +315,16 @@ jQuery.entwine("ss", function ($) {
                 }
             }
 
-            var $caption = $node.parent(".captionImage").find(".caption");
+            var $caption = $parent.find(settings.selectors.caption);
             var attr = {
                 url: $node.attr("src"),
                 AltText: $node.attr("alt"),
                 Width: $node.attr("width"),
                 Height: $node.attr("height"),
                 TitleTooltip: $node.attr("title"),
-                Alignment: this.findPosition($node.attr("class")),
+                Alignment: this.findPosition($parent.attr("class")),
                 Caption: $caption.text(),
-                ID: $node.attr("data-id")
+                ID: $parent.attr("data-id")
             }; // parse certain attributes to integer value
 
             ["Width", "Height", "ID"].forEach(function (item) {
@@ -446,63 +459,76 @@ jQuery.entwine("ss", function ($) {
             //         'right' => 'u-right'
             //     ]
             // ]);
+            console.log('asd');
+
             var attrs = this.getAttributes();
+            var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
             var settings = editor.getConfig().silverstripe_wysiswg_config;
 
-            if(settings.classes){
-                attrs.class = attrs.class.split(/\s+/).map(function(klass) {
-                    return klass + " " + settings.classes[klass] || "";
-                }).join(' ');
-            }
+            var classes = attrs.class.split(/\s+/).map(function(klass) {
+                return klass + " " + settings.classes[klass] || "";
+            }).join(' ');
 
-            var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
+            var replacerbits = Object.assign({
+                classes : "captionImage Image " + classes,
+                caption : extraData.CaptionText ? extraData.CaptionText : ""
+            }, attrs);
+
+            var container = settings.elements.container.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
+                return replacerbits[b] ? replacerbits[b] : '';
+            });
+
+            var container = $(container);
+            container.find('img').addClass("ss-htmleditorfield-file image");
+            // var
+
             // or nothing (if creating)
 
             var replacee = node && node.is("img,a") ? node : null;
-            if (replacee && replacee.parent().is(".captionImage"))
-                replacee = replacee.parent(); // Find the img node - either the existing img or a new one, and update it
+            if (replacee && replacee.parents(settings.selectors.wrapper).is(".captionImage"))
+                replacee = replacee.parents(settings.selectors.wrapper); // Find the img node - either the existing img or a new one, and update it
 
-            var img = node && node.is("img") ? node : $(settings.elements && settings.elements.image || "<img />");
-            img.attr(attrs).addClass("ss-htmleditorfield-file image"); // Any existing figure or caption node
+            // var img = node && node.is("img") ? node : $(settings.elements && settings.elements.image || "<img />");
+            // img.attr(attrs).addClass("ss-htmleditorfield-file image"); // Any existing figure or caption node
 
-            var container = img.parent(".captionImage");
-            var caption = container.find(".caption"); // If we've got caption text, we need a wrapping div.captionImage and sibling p.caption
+            // var container = img.parent(".captionImage");
+            // var caption = container.find(".caption"); // If we've got caption text, we need a wrapping div.captionImage and sibling p.caption
 
-            if (!container.length) {
-                container = $(settings.elements && settings.elements.wrapper || "<figure></figure>");
-            }
+            // if (!container.length) {
+            //     container = $(settings.elements && settings.elements.wrapper || "<figure></figure>");
+            // }
 
-            if (extraData.CaptionText) {
-                container
-                    .attr("class", "captionImage " + attrs.class + " " + settings.classes.wrapper)
-                    .removeAttr("data-mce-style")
-                    .width(attrs.width);
+            // if (extraData.CaptionText) {
+            //     container
+            //         .attr("class", "captionImage " + attrs.class + " " + settings.classes.wrapper)
+            //         .removeAttr("data-mce-style")
+            //         .width(attrs.width);
 
-                if (!caption.length) {
-                    caption = $(settings.elements && settings.elements.caption || '<figcaption class="caption"></figcaption>').appendTo(container);
-                }
+            //     if (!caption.length) {
+            //         caption = $(settings.elements && settings.elements.caption || '<figcaption class="caption"></figcaption>').appendTo(container);
+            //     }
 
-                caption
-                    .attr("class", "caption " + settings.classes.caption)
-                    .text(extraData.CaptionText);
-            } else {
-                // Otherwise forget they exist
-                container = null;
-                caption = null;
-            } // The element we are replacing the replacee with
+            //     caption
+            //         .attr("class", "caption " + settings.classes.caption)
+            //         .text(extraData.CaptionText);
+            // } else {
+            //     // Otherwise forget they exist
+            //     container = null;
+            //     caption = null;
+            // } // The element we are replacing the replacee with
 
-            var replacer = container || img; // If we're replacing something, and it's not with itself, do so
+            var replacer = container; // If we're replacing something, and it's not with itself, do so
 
-            if (replacee && replacee.not(replacer).length) {
+            if (replacee) {
                 replacee.replaceWith(replacer);
             } // If we have a wrapper element, make sure the img is the first child - img might be the
-            // replacee, and the wrapper the replacer, and we can't do this till after the replace has
-            // happened
+            // // replacee, and the wrapper the replacer, and we can't do this till after the replace has
+            // // happened
 
-            if (container) {
+            // if (container) {
 
-                container.find('picture').prepend(img);
-            } // If we don't have a replacee, then we need to insert the whole HTML
+            //     container.find('picture').prepend(img);
+            // } // If we don't have a replacee, then we need to insert the whole HTML
 
             // container.find('.leftAlone').addClass('senoooooo');
 
@@ -511,7 +537,7 @@ jQuery.entwine("ss", function ($) {
                 editor.repaint();
                 editor.insertContent(
                     $("<div />")
-                        .append(replacer)
+                        .append(container)
                         .html(),
                     {
                         skip_undo: 1
