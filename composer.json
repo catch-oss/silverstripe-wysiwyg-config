@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Catch\\SS\\WYSIWYG\\": "code/"
+            "CatchDesign\\SS\\wysiwyg\\": "src/"
         }
     },
     "extra": {

@@ -274,7 +274,7 @@ jQuery.entwine("ss", function ($) {
             }
 
             var editor = $field.getEditor();
-            var settings = editor.getConfig().silverstripe_wysiswg_config;
+            var settings = editor.getConfig().wysiswg_semantic_image;
 
             var node = $field.getEditor().getSelectedNode();
 
@@ -459,11 +459,10 @@ jQuery.entwine("ss", function ($) {
             //         'right' => 'u-right'
             //     ]
             // ]);
-            console.log('asd');
 
             var attrs = this.getAttributes();
             var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
-            var settings = editor.getConfig().silverstripe_wysiswg_config;
+            var settings = editor.getConfig().wysiswg_semantic_image;
 
             var classes = attrs.class.split(/\s+/).map(function(klass) {
                 return klass + " " + settings.classes[klass] || "";
@@ -474,11 +473,11 @@ jQuery.entwine("ss", function ($) {
                 caption : extraData.CaptionText ? extraData.CaptionText : ""
             }, attrs);
 
-            var container = settings.elements.container.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
+            var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
                 return replacerbits[b] ? replacerbits[b] : '';
             });
 
-            var container = $(container);
+            container = $(container);
             container.find('img').addClass("ss-htmleditorfield-file image");
             // var
 
