@@ -29,9 +29,11 @@ $cmsConfig->setOption('extended_valid_elements', [
     'figure[data-shortcode|data-url|class]',
     'figcaption',
     'picture',
+    'small',
     'iframe[src|style|width|height|scrolling|marginwidth|marginheight|frameborder|data*]',
     'div',
-    'div[data-url|class|data-shortcode|data-id|class]'
+    'div[data-url|class|data-shortcode|data-id|class]',
+    'p[data-url|class|data-shortcode|data-id|class]'
 ]);
 
 $arrayData = new SilverStripe\View\ArrayData();
