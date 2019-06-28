@@ -21,6 +21,11 @@ $cmsConfig::get('cms')->enablePlugins([
     'semanticimage' => $module->getResource('js/semantic-image.js'),
     'semanticvideo' => $module->getResource('js/semantic-video.js')
 ]);
+
+// <figure class="c-picture captionImage Image leftAlone c-picture--left-offset" data-shortcode="image" data-id="11"><picture class="c-picture__item"> <img title="Grant Lilly Web" src="http://iod.loc/assets/Uploads/314f01e08b/Grant-Lilly-Web.jpg" alt="&quot;/" /> </picture>
+// <figcaption class="ss-htmleditorfield-file image"></figcaption>
+// </figure>
+
 // <figure class="c-video ss-htmleditorfield-file embed" data-shortcode="embed" data-url="https://www.youtube.com/watch?v=MXs1cOlidWs">
 // <div class="c-video__inner" data-url="https://www.youtube.com/watch?v=MXs1cOlidWs"><img class="placeholder" src="https://i.ytimg.com/vi/MXs1cOlidWs/hqdefault.jpg" alt="" /></div>
 // <figcaption>asdads</figcaption>
@@ -43,7 +48,7 @@ $cmsConfig->setOption('wysiswg_semantic_image', [
     'template' => "
         <figure class='c-picture {{ classes }}' data-id='{{data-id}}' data-shortcode='{{data-shortcode}}' >
             <picture class='c-picture__item'>
-                <img src='{{src}}' title='{{title}}' alt='{{alt}}/>
+                <img src='{{src}}' title='{{title}}' alt='{{alt}}' />
             </picture>
             <figcaption class=''>
                 {{caption}}
