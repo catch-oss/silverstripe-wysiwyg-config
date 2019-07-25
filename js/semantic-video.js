@@ -14,7 +14,7 @@ var InjectableInsertMediaModal = _Injector.loadComponent(_InsertMediaModal);
 
 /* global tinymce, window */
 var InjectableInsertEmbedModal = _Injector.loadComponent(_InsertEmbedModal);
-var filter =
+var semanticvideofilter =
 
     'figure[data-shortcode="semanticvideo"]';
 /**
@@ -35,7 +35,7 @@ var filter =
                 title: insertTitle,
                 icon: 'media',
                 cmd: 'semanticvideo',
-                stateSelector: filter
+                stateSelector: semanticvideofilter
             });
             editor.addMenuItem('semanticvideo', {
                 text: contextTitle,
@@ -48,7 +48,7 @@ var filter =
                 cmd: 'semanticvideo'
             });
             editor.addContextToolbar(function (semanticvideo) {
-                return editor.dom.is(semanticvideo, filter);
+                return editor.dom.is(semanticvideo, semanticvideofilter);
             }, 'alignleft aligncenter alignright | semanticvideoedit');
             editor.addCommand('semanticvideo', function () {
                 // See HtmlEditorField.js
@@ -72,7 +72,7 @@ var filter =
                 var content =_jquery("<div>".concat(o.content, "</div>")); // Transform [semanticvideo] shortcodes
                 console.log(content.html());
 
-                content.find(filter).each(function replaceWithShortCode() {
+                content.find(semanticvideofilter).each(function replaceWithShortCode() {
                     // Note: semanticvideo <div> contains placeholder <img>, and potentially caption <p>
                     var semanticvideo = (0, _jquery)(this); // If placeholder has been removed, remove data-* properties and
                     // convert to non-shortcode div
@@ -270,7 +270,7 @@ _jquery.entwine('ss', function ($) {
                 return data;
             } // Find root semanticvideo shortcode
 
-            var element = node.closest(filter).add(node.filter(filter));
+            var element = node.closest(semanticvideofilter).add(node.filter(semanticvideofilter));
 
             if (!element.length) {
                 return data;
@@ -366,10 +366,10 @@ _jquery.entwine('ss', function ($) {
             var replacee = $(null);
 
             if (node.length) {
-                replacee = node.filter(filter); // Find find closest existing semanticvideo
+                replacee = node.filter(semanticvideofilter); // Find find closest existing semanticvideo
 
                 if (replacee.length === 0) {
-                    replacee = node.closest(filter);
+                    replacee = node.closest(semanticvideofilter);
                 } // Fail over to check if the node is an image
 
                 if (replacee.length === 0) {

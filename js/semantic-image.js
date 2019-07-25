@@ -18,7 +18,7 @@ var _InsertMediaModal = n(InsertMediaModal);
 var _ShortcodeSerialiser = n(ShortcodeSerialiser);
 var InjectableInsertMediaModal = _Injector.loadComponent(_InsertMediaModal);
 
-var filter = 'img[data-shortcode="image"]';
+var semanticimagefilter = 'figure[data-shortcode="image"]';
 
 (function () {
     var semanticimage = {
@@ -42,7 +42,7 @@ var filter = 'img[data-shortcode="image"]';
                 title: insertTitle,
                 icon: "image",
                 cmd: "semanticimage",
-                stateSelector: filter
+                stateSelector: semanticimagefilter
             });
             ed.addMenuItem("semanticimage", {
                 text: contextTitle,
@@ -54,8 +54,10 @@ var filter = 'img[data-shortcode="image"]';
                 icon: "editimage",
                 cmd: "semanticimage"
             });
+
             ed.addContextToolbar(function (img) {
-                return ed.dom.is(img, filter);
+                console.log(ed.dom.is(img, semanticimagefilter), 'is-it');
+                return ed.dom.is(img, semanticimagefilter);
             }, "alignleft aligncenter alignright | semanticimageedit");
             ed.addCommand("semanticimage", function () {
                 // See HtmlEditorField.js
@@ -78,8 +80,8 @@ var filter = 'img[data-shortcode="image"]';
                 var content = jQuery(o.content); // Transform [image] shortcodes
 
                 content
-                    .find(filter)
-                    .add(content.filter(filter))
+                    .find(semanticimagefilter)
+                    .add(content.filter(semanticimagefilter))
                     .each(function () {
                         var el = jQuery(this);
                         var properties = {
