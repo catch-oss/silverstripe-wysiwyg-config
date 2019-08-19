@@ -18,7 +18,7 @@ var _InsertMediaModal = n(InsertMediaModal);
 var _ShortcodeSerialiser = n(ShortcodeSerialiser);
 var InjectableInsertMediaModal = _Injector.loadComponent(_InsertMediaModal);
 
-var semanticimagefilter = 'figure[data-shortcode="image"]';
+var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
 
 (function () {
     var semanticimage = {
@@ -28,6 +28,7 @@ var semanticimagefilter = 'figure[data-shortcode="image"]';
          * @param {Object} ed
          */
         init: function init(ed) {
+            var parent_self = this;
 
             var insertTitle = i18n._t(
                 "AssetAdmin.INSERT_FROM_FILES",
@@ -96,7 +97,7 @@ var semanticimagefilter = 'figure[data-shortcode="image"]';
                             alt: el.attr("alt")
                         };
                         var shortCode = _ShortcodeSerialiser.serialise({
-                            name: "image",
+                            name: "semanticimage",
                             properties: properties,
                             wrapped: false
                         });
@@ -115,16 +116,34 @@ var semanticimagefilter = 'figure[data-shortcode="image"]';
             ed.on("BeforeSetContent", function (o) {
                 var content = o.content; // Transform [image] tag
 
-                var match = _ShortcodeSerialiser.match("image", false, content);
+                // console.log("asd", parent_self.getElement, "asdadsads----@@@@",  ed.);
+                var match = _ShortcodeSerialiser.match("semanticimage", false, content);
 
                 while (match) {
-                    var attrs = match.properties;
+            //         var attrs = match.properties;
+            //         var attrs = this.getAttributes();
+            // var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
+            // var settings = editor.getConfig().wysiswg_semantic_image;
+
+            // var classes = attrs.class.split(/\s+/).map(function(klass) {
+            //     return klass + " " + settings.classes[klass] || "";
+            // }).join(' ');
+
+            // var replacerbits = Object.assign({
+            //     classes : "captionImage Image " + classes,
+            //     caption : extraData.CaptionText ? extraData.CaptionText : ""
+            // }, attrs);
+
+            // var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
+            //     return replacerbits[b] ? replacerbits[b] : '';
+            // });
+
                     var el = jQuery("<img/>")
                         .attr(
                             Object.assign({}, attrs, {
                                 id: undefined,
                                 "data-id": attrs.id,
-                                "data-shortcode": "image"
+                                "data-shortcode": "semanticimage"
                             })
                         )
                         .addClass("ss-htmleditorfield-file image");
@@ -135,7 +154,7 @@ var semanticimagefilter = 'figure[data-shortcode="image"]';
                             .html()
                     ); // Get next match
 
-                    match = _ShortcodeSerialiser.match("image", false, content);
+                    match = _ShortcodeSerialiser.match("semanticimage", false, content);
                 }
 
                 o.content = content;
@@ -245,6 +264,10 @@ jQuery.entwine("ss", function ($) {
 
                 switch (category) {
                     case "image":
+                        result = this.insertImage();
+                        break;
+
+                    case "semanticimage":
                         result = this.insertImage();
                         break;
 
@@ -367,7 +390,7 @@ jQuery.entwine("ss", function ($) {
                 title: data.TitleTooltip,
                 class: data.Alignment,
                 "data-id": data.ID,
-                "data-shortcode": "image"
+                "data-shortcode": "semanticimage"
             };
 
             return attribs;
@@ -480,7 +503,7 @@ jQuery.entwine("ss", function ($) {
             });
 
             container = $(container);
-            container.find('img').addClass("ss-htmleditorfield-file image");
+            container.find('img').addClass("ss-htmleditorfield-file semanticimage image");
             // var
 
             // or nothing (if creating)

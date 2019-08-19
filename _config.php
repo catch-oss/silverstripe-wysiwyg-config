@@ -49,9 +49,8 @@ $cmsConfig->setOption('wysiswg_semantic_image', [
         <figure class='c-picture {{ classes }}' data-id='{{data-id}}' data-shortcode='{{data-shortcode}}' >
             <picture class='c-picture__item'>
                 <img src='{{src}}' title='{{title}}' alt='{{alt}}' />
-            </picture>
-            <figcaption class=''>
-                {{caption}}
+            </picture><figcaption class=''>
+                {{caption}} asdsaaasdasds
             </figcaption>
         </figure>",
 
@@ -73,8 +72,7 @@ $cmsConfig->setOption('wysiswg_semantic_video', [
         <figure class='c-video {{ classes }}' data-shortcode='{{data-shortcode}}' data-url='{{ data-url }}'>
             <div class='c-video__inner' data-url='{{ data-url }}'>
                 {{video}}
-            </div>
-            <figcaption>
+            </div><figcaption>
                 {{caption}}
             </figcaption>
         </figure>",
