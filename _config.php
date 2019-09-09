@@ -19,8 +19,11 @@ $cmsConfig->disablePlugins('ssmedia');
 $cmsConfig->disablePlugins('ssembed');
 $cmsConfig::get('cms')->enablePlugins([
     'semanticimage' => $module->getResource('js/semantic-image.js'),
-    'semanticvideo' => $module->getResource('js/semantic-video.js')
+    'semanticvideo' => $module->getResource('js/semantic-video.js'),
+    'definitionlist' => $module->getResource('js/definitionlist/plugin.js')
 ]);
+
+$cmsConfig->setContentCSS([ $module->getResource('js/plugin-style.css') ]);
 
 // <figure class="c-picture captionImage Image leftAlone c-picture--left-offset" data-shortcode="image" data-id="11"><picture class="c-picture__item"> <img title="Grant Lilly Web" src="http://iod.loc/assets/Uploads/314f01e08b/Grant-Lilly-Web.jpg" alt="&quot;/" /> </picture>
 // <figcaption class="ss-htmleditorfield-file image"></figcaption>
