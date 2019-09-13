@@ -53,7 +53,7 @@ $cmsConfig->setOption('wysiswg_semantic_image', [
             <picture class='c-picture__item'>
                 <img src='{{src}}' title='{{title}}' alt='{{alt}}' />
             </picture><figcaption class=''>
-                {{caption}} asdsaaasdasds
+                {{caption}}
             </figcaption>
         </figure>",
 

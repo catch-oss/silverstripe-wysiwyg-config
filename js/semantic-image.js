@@ -57,7 +57,7 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
             });
 
             ed.addContextToolbar(function (img) {
-                console.log(ed.dom.is(img, semanticimagefilter), 'is-it');
+                // console.log(ed.dom.is(img, semanticimagefilter), 'is-it');
                 return ed.dom.is(img, semanticimagefilter);
             }, "alignleft aligncenter alignright | semanticimageedit");
             ed.addCommand("semanticimage", function () {
@@ -114,36 +114,35 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
                 });
             });
             ed.on("BeforeSetContent", function (o) {
-                var content = o.content; // Transform [image] tag
-
-                // console.log("asd", parent_self.getElement, "asdadsads----@@@@",  ed.);
+                var content = o.content;
                 var match = _ShortcodeSerialiser.match("semanticimage", false, content);
 
                 while (match) {
-            //         var attrs = match.properties;
-            //         var attrs = this.getAttributes();
-            // var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
-            // var settings = editor.getConfig().wysiswg_semantic_image;
 
-            // var classes = attrs.class.split(/\s+/).map(function(klass) {
-            //     return klass + " " + settings.classes[klass] || "";
-            // }).join(' ');
+                    // var attrs = match.properties;
+                    // var attrs = this.getAttributes();
+                    // var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
+                    // var settings = editor.getConfig().wysiswg_semantic_image;
 
-            // var replacerbits = Object.assign({
-            //     classes : "captionImage Image " + classes,
-            //     caption : extraData.CaptionText ? extraData.CaptionText : ""
-            // }, attrs);
+                    // var classes = attrs.class.split(/\s+/).map(function(klass) {
+                    //     return klass + " " + settings.classes[klass] || "";
+                    // }).join(' ');
 
-            // var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
-            //     return replacerbits[b] ? replacerbits[b] : '';
-            // });
+                    // var replacerbits = Object.assign({
+                    //     classes : "captionImage Image " + classes,
+                    //     caption : extraData.CaptionText ? extraData.CaptionText : ""
+                    // }, attrs);
+
+                    // var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
+                    //     return replacerbits[b] ? replacerbits[b] : '';
+                    // });
 
                     var el = jQuery("<img/>")
                         .attr(
-                            Object.assign({}, attrs, {
-                                id: undefined,
-                                "data-id": attrs.id,
-                                "data-shortcode": "semanticimage"
+                            Object.assign({},{
+                                "id" : undefined,
+                                "data-id" : match.properties.id,
+                                "data-shortcode" : "semanticimage"
                             })
                         )
                         .addClass("ss-htmleditorfield-file image");
@@ -315,11 +314,9 @@ jQuery.entwine("ss", function ($) {
                 if(p){
                     $parent = p;
                 }
-
             }
 
             var hrefParts = ($node.attr("href") || "").split("#");
-
             if (hrefParts[0]) {
                 // check if file is safe
                 var shortcode = _ShortcodeSerialiser.match(
@@ -402,8 +399,9 @@ jQuery.entwine("ss", function ($) {
          */
         getExtraData: function getExtraData() {
             var data = this.getData();
+            console.log(data);
             return {
-                CaptionText: data && data.Caption
+                CaptionText: data && data.Caption || data && data.DefaultCaptionText
             };
         },
 
