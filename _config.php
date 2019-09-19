@@ -18,6 +18,7 @@ $cmsConfig = HTMLEditorConfig::get('cms');
 $cmsConfig->disablePlugins('ssmedia');
 $cmsConfig->disablePlugins('ssembed');
 $cmsConfig::get('cms')->enablePlugins([
+    'SplitBlockquote' => $module->getResource('js/SplitBlockquote.js'),
     'semanticimage' => $module->getResource('js/semantic-image.js'),
     'semanticvideo' => $module->getResource('js/semantic-video.js'),
     'definitionlist' => $module->getResource('js/definitionlist/plugin.js')
