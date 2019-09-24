@@ -66,8 +66,6 @@ class SemanticEmbeds
 
     public static function SemanticImage($arguments, $content = null, $parser = null, $tagName)
     {
-        var_dump($arguments);
-
         if (!empty($content)) {
             $serviceURL = $content;
         } elseif (!empty($arguments['url'])) {

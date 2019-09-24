@@ -18,10 +18,22 @@ $cmsConfig = HTMLEditorConfig::get('cms');
 $cmsConfig->disablePlugins('ssmedia');
 $cmsConfig->disablePlugins('ssembed');
 $cmsConfig::get('cms')->enablePlugins([
+    'SplitBlockquote' => $module->getResource('js/SplitBlockquote.js'),
     'semanticimage' => $module->getResource('js/semantic-image.js'),
-    'semanticvideo' => $module->getResource('js/semantic-video.js')
+    'semanticvideo' => $module->getResource('js/semantic-video.js'),
+    'definitionlist' => $module->getResource('js/definitionlist/plugin.js')
 ]);
 
+$cmsConfig->setContentCSS([ $module->getResource('js/plugin-style.css') ]);
+
+// <figure class="c-picture captionImage Image leftAlone c-picture--left-offset" data-shortcode="image" data-id="11"><picture class="c-picture__item"> <img title="Grant Lilly Web" src="http://iod.loc/assets/Uploads/314f01e08b/Grant-Lilly-Web.jpg" alt="&quot;/" /> </picture>
+// <figcaption class="ss-htmleditorfield-file image"></figcaption>
+// </figure>
+
+// <figure class="c-video ss-htmleditorfield-file embed" data-shortcode="embed" data-url="https://www.youtube.com/watch?v=MXs1cOlidWs">
+// <div class="c-video__inner" data-url="https://www.youtube.com/watch?v=MXs1cOlidWs"><img class="placeholder" src="https://i.ytimg.com/vi/MXs1cOlidWs/hqdefault.jpg" alt="" /></div>
+// <figcaption>asdads</figcaption>
+// </figure>
 $cmsConfig->setOption('extended_valid_elements', [
     'figure[data-shortcode|data-url|class]',
     'figcaption',
@@ -36,12 +48,12 @@ $cmsConfig->setOption('extended_valid_elements', [
 $arrayData = new SilverStripe\View\ArrayData();
 $cmsConfig->setOption('wysiswg_semantic_image', [
 
+
     'template' => '
         <figure class="c-picture {{ classes }}" data-id="{{data-id}}" data-shortcode="{{data-shortcode}}" >
             <picture class="c-picture__item">
                 <img src="{{src}}" title="{{title}}" alt="{{alt}}" />
-            </picture>
-            <figcaption class="">
+            </picture><figcaption class="">
                 {{caption}}
             </figcaption>
         </figure>',
@@ -64,8 +76,7 @@ $cmsConfig->setOption('wysiswg_semantic_video', [
         <figure class="c-video {{ classes }}" data-shortcode="{{data-shortcode}}" data-url="{{ data-url }}">
             <div class="c-video__inner" data-url="{{ data-url }}">
                 {{video}}
-            </div>
-            <figcaption>
+            </div><figcaption>
                 {{caption}}
             </figcaption>
         </figure>',
