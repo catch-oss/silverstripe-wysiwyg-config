@@ -21,10 +21,7 @@ $cmsConfig::get('cms')->enablePlugins([
     'semanticimage' => $module->getResource('js/semantic-image.js'),
     'semanticvideo' => $module->getResource('js/semantic-video.js')
 ]);
-// <figure class="c-video ss-htmleditorfield-file embed" data-shortcode="embed" data-url="https://www.youtube.com/watch?v=MXs1cOlidWs">
-// <div class="c-video__inner" data-url="https://www.youtube.com/watch?v=MXs1cOlidWs"><img class="placeholder" src="https://i.ytimg.com/vi/MXs1cOlidWs/hqdefault.jpg" alt="" /></div>
-// <figcaption>asdads</figcaption>
-// </figure>
+
 $cmsConfig->setOption('extended_valid_elements', [
     'figure[data-shortcode|data-url|class]',
     'figcaption',
@@ -39,16 +36,15 @@ $cmsConfig->setOption('extended_valid_elements', [
 $arrayData = new SilverStripe\View\ArrayData();
 $cmsConfig->setOption('wysiswg_semantic_image', [
 
-
-    'template' => "
-        <figure class='c-picture {{ classes }}' data-id='{{data-id}}' data-shortcode='{{data-shortcode}}' >
-            <picture class='c-picture__item'>
-                <img src='{{src}}' title='{{title}}' alt='{{alt}}/>
+    'template' => '
+        <figure class="c-picture {{ classes }}" data-id="{{data-id}}" data-shortcode="{{data-shortcode}}" >
+            <picture class="c-picture__item">
+                <img src="{{src}}" title="{{title}}" alt="{{alt}}" />
             </picture>
-            <figcaption class=''>
+            <figcaption class="">
                 {{caption}}
             </figcaption>
-        </figure>",
+        </figure>',
 
     'classes' => [
         'left' => 'c-picture--left',
@@ -64,15 +60,15 @@ $cmsConfig->setOption('wysiswg_semantic_image', [
 ]);
 
 $cmsConfig->setOption('wysiswg_semantic_video', [
-    'template' => "
-        <figure class='c-video {{ classes }}' data-shortcode='{{data-shortcode}}' data-url='{{ data-url }}'>
-            <div class='c-video__inner' data-url='{{ data-url }}'>
+    'template' => '
+        <figure class="c-video {{ classes }}" data-shortcode="{{data-shortcode}}" data-url="{{ data-url }}">
+            <div class="c-video__inner" data-url="{{ data-url }}">
                 {{video}}
             </div>
             <figcaption>
                 {{caption}}
             </figcaption>
-        </figure>",
+        </figure>',
 
     'classes' => [
         'left' => 'c-video--left',
