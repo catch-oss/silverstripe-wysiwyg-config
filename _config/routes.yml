@@ -1,0 +1,11 @@
+---
+Name: ss-wysiwyg-routes
+After:
+  - "#rootroutes"
+  - "#coreroutes"
+
+---
+SilverStripe\Control\Director:
+  rules:
+    "image-resample//$Action/$ID/$Name" : 'CatchDesign\SS\wysiwyg\Controller\ImageResampleController'
+

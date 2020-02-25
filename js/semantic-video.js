@@ -69,8 +69,7 @@ var semanticvideofilter =
             editor.on('SaveContent', function (o) {
                 var settings = o.target.settings.wysiswg_semantic_video;
 
-                var content =_jquery("<div>".concat(o.content, "</div>")); // Transform [semanticvideo] shortcodes
-                console.log(content.html());
+                var content = _jquery("<div>".concat(o.content, "</div>")); // Transform [semanticvideo] shortcodes
 
                 content.find(semanticvideofilter).each(function replaceWithShortCode() {
                     // Note: semanticvideo <div> contains placeholder <img>, and potentially caption <p>
@@ -121,11 +120,11 @@ var semanticvideofilter =
                     var data = match.properties; // Add base div
 
                     var replacerbits = {
-                        'classes'           : data.class,
-                        'data-shortcode'    : 'semanticvideo',
-                        'video'             : '<img src="' + data.thumbnail + '" class="placeholder" />',
-                        'data-url'          : data.url,
-                        'caption'           : data.caption ? data.caption : ''
+                        'classes': data.class,
+                        'data-shortcode': 'semanticvideo',
+                        'video': '<img src="' + data.thumbnail + '" class="placeholder" />',
+                        'data-url': data.url,
+                        'caption': data.caption ? data.caption : ''
                     };
 
                     var base = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function (a, b) {
@@ -328,11 +327,11 @@ _jquery.entwine('ss', function ($) {
             // var placeholder = _jquery('<img />').attr('src', data.PreviewUrl).addClass('placeholder');
 
             var replacerbits = {
-                'classes'           : 'ss-htmleditorfield-file semanticvideo embed',
-                'data-shortcode'    : 'semanticvideo',
-                'video'             : '<img src="' + data.PreviewUrl + '" class="placeholder" />',
-                'data-url'          : data.Url,
-                'caption'           : data.CaptionText ? data.CaptionText : ''
+                'classes': 'ss-htmleditorfield-file semanticvideo embed',
+                'data-shortcode': 'semanticvideo',
+                'video': '<img src="' + data.PreviewUrl + '" class="placeholder" />',
+                'data-url': data.Url,
+                'caption': data.CaptionText ? data.CaptionText : ''
             };
 
             var base = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function (a, b) {

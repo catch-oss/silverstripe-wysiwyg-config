@@ -2,9 +2,11 @@
 
 
 namespace CatchDesign\SS\wysiwyg\Shortcodes;
+
 use SilverStripe\Forms\HTMLEditor\HTMLEditorConfig;
 use SilverStripe\View\Embed\Embeddable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\Debug;
 
 /**
  * Provider for the [embed] shortcode tag used by the embedding service
@@ -29,10 +31,12 @@ class SemanticEmbeds
         'SemanticVideo' => 'HTMLText'
     ];
 
-    public static function template($template, $array){
-        return preg_replace_callback( '/\{\{\s*(\S*)\s*\}\}/' , function ($matches) use ($array) {
-            return ( ( isset ( $array[$matches[1]] ) ) ? $array[$matches[1]] : '' );
-        } , $template );
+    public static function template($template, $array)
+    {
+
+        return preg_replace_callback('/\{\{\s*(\S*)\s*\}\}/', function ($matches) use ($array) {
+            return ((isset($array[$matches[1]])) ? $array[$matches[1]] : '');
+        }, $template);
     }
 
 
@@ -48,6 +52,7 @@ class SemanticEmbeds
 
         $embed = Injector::inst()->create(Embeddable::class, $serviceURL);
         $embed = $embed->getEmbed();
+
 
         $replacements = [
             'classes' => $arguments['class'],
@@ -66,6 +71,7 @@ class SemanticEmbeds
 
     public static function SemanticImage($arguments, $content = null, $parser = null, $tagName)
     {
+
         if (!empty($content)) {
             $serviceURL = $content;
         } elseif (!empty($arguments['url'])) {
@@ -76,6 +82,9 @@ class SemanticEmbeds
 
         $embed = Injector::inst()->create(Embeddable::class, $serviceURL);
         $embed = $embed->getEmbed();
+
+        Debug::show($embed);
+        die;
 
         $replacements = [
             'classes' => $arguments['class'],
@@ -91,7 +100,8 @@ class SemanticEmbeds
         $settings = $cmsConfig->getOption('wysiswg_semantic_image');
 
         $template = SemanticEmbeds::template($settings['template'], $replacements);
+
+
         return $template;
     }
-
 }

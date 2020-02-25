@@ -1,10 +1,11 @@
 <?php
 
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Forms\HTMLEditor\HTMLEditorConfig;
 use Silverstripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\View\Parsers\ShortcodeParser;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorConfig;
+use CatchDesign\SS\wysiwyg\Shortcodes\SemanticEmbeds;
 
 // Define path constant
 $path = str_replace('\\', '/', __DIR__);
@@ -24,7 +25,7 @@ $cmsConfig::get('cms')->enablePlugins([
     'definitionlist' => $module->getResource('js/definitionlist/plugin.js')
 ]);
 
-$cmsConfig->setContentCSS([ $module->getResource('js/plugin-style.css') ]);
+$cmsConfig->setContentCSS([$module->getResource('js/plugin-style.css')]);
 
 // <figure class="c-picture captionImage Image leftAlone c-picture--left-offset" data-shortcode="image" data-id="11"><picture class="c-picture__item"> <img title="Grant Lilly Web" src="http://iod.loc/assets/Uploads/314f01e08b/Grant-Lilly-Web.jpg" alt="&quot;/" /> </picture>
 // <figcaption class="ss-htmleditorfield-file image"></figcaption>
@@ -48,11 +49,10 @@ $cmsConfig->setOption('extended_valid_elements', [
 $arrayData = new SilverStripe\View\ArrayData();
 $cmsConfig->setOption('wysiswg_semantic_image', [
 
-
     'template' => '
         <figure class="c-picture {{ classes }}" data-id="{{data-id}}" data-shortcode="{{data-shortcode}}" >
             <picture class="c-picture__item">
-                <img src="{{src}}" title="{{title}}" alt="{{alt}}" />
+                <img src="{{src}}" title="{{title}}" alt="{{alt}}" width="{{width}}" height="{{height}}" />
             </picture><figcaption class="">
                 {{caption}}
             </figcaption>
@@ -96,6 +96,3 @@ $cmsConfig->setOption('wysiswg_semantic_video', [
 
 $cmsConfig->addButtonsToLine(2, 'semanticimage');
 $cmsConfig->addButtonsToLine(2, 'semanticvideo');
-
-ShortcodeParser::get('default')->register('semanticvideo', ['CatchDesign\SS\wysiwyg\Shortcodes\SemanticEmbeds', 'SemanticVideo']);
-ShortcodeParser::get('default')->register('semanticimage', ['CatchDesign\SS\wysiwyg\Shortcodes\SemanticEmbeds', 'SemanticImage']);

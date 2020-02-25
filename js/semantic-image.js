@@ -78,6 +78,7 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
                 }
             });
             ed.on("SaveContent", function (o) {
+                console.log('save content fired');
                 var content = jQuery(o.content); // Transform [image] shortcodes
 
                 content
@@ -85,6 +86,7 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
                     .add(content.filter(semanticimagefilter))
                     .each(function () {
                         var el = jQuery(this);
+
                         var properties = {
                             // Requires server-side preprocessing of HTML+shortcodes in HTMLValue
                             src: el.attr("src"),
@@ -96,6 +98,10 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
                             title: el.attr("title"),
                             alt: el.attr("alt")
                         };
+
+                        console.log('saved content props', properties);
+
+
                         var shortCode = _ShortcodeSerialiser.serialise({
                             name: "semanticimage",
                             properties: properties,
@@ -139,10 +145,10 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
 
                     var el = jQuery("<img/>")
                         .attr(
-                            Object.assign({},{
-                                "id" : undefined,
-                                "data-id" : match.properties.id,
-                                "data-shortcode" : "semanticimage"
+                            Object.assign({}, {
+                                "id": undefined,
+                                "data-id": match.properties.id,
+                                "data-shortcode": "semanticimage"
                             })
                         )
                         .addClass("ss-htmleditorfield-file image");
@@ -276,11 +282,15 @@ jQuery.entwine("ss", function ($) {
             } catch (e) {
                 this.statusMessage(e, "bad");
             }
-
+            // if result is a promise then just return the promise
+            if (typeof result == 'object' && $result.hasOwnProperty('then')) {
+                return result;
+            }
+            // else it should be a bool 
             if (result) {
                 this.close();
             }
-
+            // so return a empty promise that resolves it's self 
             return Promise.resolve();
         },
 
@@ -290,7 +300,8 @@ jQuery.entwine("ss", function ($) {
          * @returns {object}
          */
         getOriginalAttributes: function getOriginalAttributes() {
-            console.log('asdasd');
+
+
             var $field = this.getElement();
 
             if (!$field) {
@@ -311,7 +322,7 @@ jQuery.entwine("ss", function ($) {
 
             if (!$node.is(settings.selectors.wrapper)) {
                 var p = $node.parents(settings.selectors.wrapper);
-                if(p){
+                if (p) {
                     $parent = p;
                 }
             }
@@ -399,7 +410,7 @@ jQuery.entwine("ss", function ($) {
          */
         getExtraData: function getExtraData() {
             var data = this.getData();
-            console.log(data);
+
             return {
                 CaptionText: data && data.Caption || data && data.DefaultCaptionText
             };
@@ -413,6 +424,7 @@ jQuery.entwine("ss", function ($) {
          * @returns {boolean} success
          */
         insertFile: function insertFile() {
+
             var data = this.getData();
             var editor = this.getElement().getEditor();
             var $node = $(editor.getSelectedNode());
@@ -461,6 +473,7 @@ jQuery.entwine("ss", function ($) {
          * @returns {boolean} success
          */
         insertImage: function insertImage() {
+
             var $field = this.getElement();
 
             if (!$field) {
@@ -475,101 +488,81 @@ jQuery.entwine("ss", function ($) {
 
             var node = $(editor.getSelectedNode()); // Get the attributes & extra data
 
-            // $cmsConfig->setOption('silverstripe_wysiswg_config', [
-            //     'template' => $arrayData->renderWith('semantic_image'),
-            //     'classes' => [
-            //         'left' => 'u-left',
-            //         'right' => 'u-right'
-            //     ]
-            // ]);
-
             var attrs = this.getAttributes();
-            var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
-            var settings = editor.getConfig().wysiswg_semantic_image;
+            var that = this;
 
-            var classes = attrs.class.split(/\s+/).map(function(klass) {
-                return klass + " " + settings.classes[klass] || "";
-            }).join(' ');
+            return new Promise((resolve, reject) => {
 
-            var replacerbits = Object.assign({
-                classes : "captionImage Image " + classes,
-                caption : extraData.CaptionText ? extraData.CaptionText : ""
-            }, attrs);
-
-            var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
-                return replacerbits[b] ? replacerbits[b] : '';
-            });
-
-            container = $(container);
-            container.find('img').addClass("ss-htmleditorfield-file semanticimage image");
-            // var
-
-            // or nothing (if creating)
-
-            var replacee = node && node.is("img,a") ? node : null;
-            if (replacee && replacee.parents(settings.selectors.wrapper).is(".captionImage"))
-                replacee = replacee.parents(settings.selectors.wrapper); // Find the img node - either the existing img or a new one, and update it
-
-            // var img = node && node.is("img") ? node : $(settings.elements && settings.elements.image || "<img />");
-            // img.attr(attrs).addClass("ss-htmleditorfield-file image"); // Any existing figure or caption node
-
-            // var container = img.parent(".captionImage");
-            // var caption = container.find(".caption"); // If we've got caption text, we need a wrapping div.captionImage and sibling p.caption
-
-            // if (!container.length) {
-            //     container = $(settings.elements && settings.elements.wrapper || "<figure></figure>");
-            // }
-
-            // if (extraData.CaptionText) {
-            //     container
-            //         .attr("class", "captionImage " + attrs.class + " " + settings.classes.wrapper)
-            //         .removeAttr("data-mce-style")
-            //         .width(attrs.width);
-
-            //     if (!caption.length) {
-            //         caption = $(settings.elements && settings.elements.caption || '<figcaption class="caption"></figcaption>').appendTo(container);
-            //     }
-
-            //     caption
-            //         .attr("class", "caption " + settings.classes.caption)
-            //         .text(extraData.CaptionText);
-            // } else {
-            //     // Otherwise forget they exist
-            //     container = null;
-            //     caption = null;
-            // } // The element we are replacing the replacee with
-
-            var replacer = container; // If we're replacing something, and it's not with itself, do so
-
-            if (replacee) {
-                replacee.replaceWith(replacer);
-            } // If we have a wrapper element, make sure the img is the first child - img might be the
-            // // replacee, and the wrapper the replacer, and we can't do this till after the replace has
-            // // happened
-
-            // if (container) {
-
-            //     container.find('picture').prepend(img);
-            // } // If we don't have a replacee, then we need to insert the whole HTML
-
-            // container.find('.leftAlone').addClass('senoooooo');
-
-            if (!replacee) {
-                // Otherwise insert the whole HTML content
-                editor.repaint();
-                editor.insertContent(
-                    $("<div />")
-                        .append(container)
-                        .html(),
+                // lets get a re sampled image.
+                $.get('/image-resample/resample',
                     {
-                        skip_undo: 1
-                    }
-                );
-            }
+                        id: attrs['data-id'] || 0,
+                        width: attrs['width'] || 0,
+                        height: attrs['height'] || 0,
+                    },
+                    function (resampledImgSrc) {
 
-            editor.addUndo();
-            editor.repaint();
-            return true;
+                        if (resampledImgSrc) {
+                            attrs.src = resampledImgSrc;
+                        }
+
+
+                        var extraData = that.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
+                        var settings = editor.getConfig().wysiswg_semantic_image;
+
+                        var classes = attrs.class.split(/\s+/).map(function (klass) {
+                            return klass + " " + settings.classes[klass] || "";
+                        }).join(' ');
+
+                        var replacerbits = Object.assign({
+                            classes: "captionImage Image " + classes,
+                            caption: extraData.CaptionText ? extraData.CaptionText : ""
+                        }, attrs);
+
+                        var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function (a, b) {
+                            return replacerbits[b] ? replacerbits[b] : '';
+                        });
+
+                        container = $(container);
+                        container.find('img').addClass("ss-htmleditorfield-file semanticimage image");
+                        // var
+
+                        // or nothing (if creating)
+
+                        var replacee = node && node.is("img,a") ? node : null;
+                        if (replacee && replacee.parents(settings.selectors.wrapper).is(".captionImage"))
+                            replacee = replacee.parents(settings.selectors.wrapper); // Find the img node - either the existing img or a new one, and update it
+
+
+
+                        var replacer = container; // If we're replacing something, and it's not with itself, do so
+
+                        if (replacee) {
+                            replacee.replaceWith(replacer);
+                        }
+
+                        if (!replacee) {
+                            // Otherwise insert the whole HTML content
+                            editor.repaint();
+                            editor.insertContent(
+                                $("<div />")
+                                    .append(container)
+                                    .html(),
+                                {
+                                    skip_undo: 1
+                                }
+                            );
+                        }
+
+
+                        editor.addUndo();
+                        editor.repaint();
+                        that.close();
+
+                        resolve();
+
+                    });
+            });
         },
 
         /**
