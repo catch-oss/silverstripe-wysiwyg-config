@@ -41,6 +41,6 @@ class ImageResampleController extends Controller
         }
 
         $file = $file->Fill($width, $height);
-        return $file->getAbsoluteURL();
+        return $file->getURL();
     }
 }
