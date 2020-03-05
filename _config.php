@@ -48,7 +48,6 @@ $cmsConfig->setOption('extended_valid_elements', [
 
 $arrayData = new SilverStripe\View\ArrayData();
 $cmsConfig->setOption('wysiswg_semantic_image', [
-
     'template' => '
         <figure class="c-picture {{ classes }}" data-id="{{data-id}}" data-shortcode="{{data-shortcode}}" >
             <picture class="c-picture__item">
@@ -96,3 +95,6 @@ $cmsConfig->setOption('wysiswg_semantic_video', [
 
 $cmsConfig->addButtonsToLine(2, 'semanticimage');
 $cmsConfig->addButtonsToLine(2, 'semanticvideo');
+
+ShortcodeParser::get('default')->register('semanticvideo', ['CatchDesign\SS\wysiwyg\Shortcodes\SemanticEmbeds', 'SemanticVideo']);
+ShortcodeParser::get('default')->register('semanticimage', ['CatchDesign\SS\wysiwyg\Shortcodes\SemanticEmbeds', 'SemanticImage']);

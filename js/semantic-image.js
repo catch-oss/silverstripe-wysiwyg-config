@@ -6,7 +6,7 @@
 */
 
 function n(t) {
-    return t && t.__esModule ? t.default : t
+    return t && t.__esModule ? t.default : t;
 }
 
 var _jquery = jQuery;
@@ -78,36 +78,35 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
                 }
             });
             ed.on("SaveContent", function (o) {
-                console.log('save content fired');
                 var content = jQuery(o.content); // Transform [image] shortcodes
 
                 content
                     .find(semanticimagefilter)
                     .add(content.filter(semanticimagefilter))
-                    .each(function () {
-                        var el = jQuery(this);
+                    .each(function (i, el) {
+                        var el = jQuery(el);
 
                         var properties = {
                             // Requires server-side preprocessing of HTML+shortcodes in HTMLValue
-                            src: el.attr("src"),
+                            src: el.attr("src") || el.find('img[src]').first().attr("src"),
                             id: el.data("id"),
-                            width: el.attr("width"),
-                            height: el.attr("height"),
+                            width: el.attr("width") || el.find('[width]').first().attr("width"),
+                            height: el.find('[height]').first().attr("height"),
                             class: el.attr("class"),
                             // don't save caption, since that's in the containing element
-                            title: el.attr("title"),
-                            alt: el.attr("alt")
+                            title: el.attr("title") || el.find('[title]').first().attr("title"),
+                            alt: el.attr("alt") || el.find('[alt]').first().attr("alt"),
+                            caption: el.find('figcaption').first().text()
                         };
-
-                        console.log('saved content props', properties);
-
 
                         var shortCode = _ShortcodeSerialiser.serialise({
                             name: "semanticimage",
                             properties: properties,
                             wrapped: false
                         });
-                        el.replaceWith(shortCode);
+                        var pos = content.index(el);
+                        content[pos] = shortCode;
+                        // el.replaceWith(shortCode);
                     }); // Insert outerHTML in order to retain all nodes incl. <script>
                 // tags which would've been filtered out with jQuery.html().
                 // Note that <script> tags might be sanitized separately based on editor config.
@@ -116,6 +115,10 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
                 content.each(function () {
                     if (this.outerHTML !== undefined) {
                         o.content += this.outerHTML;
+                    } else if (this.textContent !== undefined) {
+                        o.content += this.textContent;
+                    } else {
+                        o.content += this;
                     }
                 });
             });
@@ -125,38 +128,28 @@ var semanticimagefilter = 'figure[data-shortcode="semanticimage"]';
 
                 while (match) {
 
-                    // var attrs = match.properties;
-                    // var attrs = this.getAttributes();
-                    // var extraData = this.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
-                    // var settings = editor.getConfig().wysiswg_semantic_image;
+                    var attrs = match.properties;
 
-                    // var classes = attrs.class.split(/\s+/).map(function(klass) {
-                    //     return klass + " " + settings.classes[klass] || "";
-                    // }).join(' ');
+                    var settings = ed.settings.wysiswg_semantic_image;
 
-                    // var replacerbits = Object.assign({
-                    //     classes : "captionImage Image " + classes,
-                    //     caption : extraData.CaptionText ? extraData.CaptionText : ""
-                    // }, attrs);
+                    var classes = attrs.class.split(/\s+/).map(function(klass) {
+                        return klass + " " + (settings.classes[klass] || "");
+                    }).join(' ');
 
-                    // var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b){
-                    //     return replacerbits[b] ? replacerbits[b] : '';
-                    // });
+                    var replacerbits = Object.assign({
+                        classes: classes,
+                        'data-id': attrs.id,
+                        "data-shortcode": "semanticimage",
+                        'id': ''
+                    }, attrs);
 
-                    var el = jQuery("<img/>")
-                        .attr(
-                            Object.assign({}, {
-                                "id": undefined,
-                                "data-id": match.properties.id,
-                                "data-shortcode": "semanticimage"
-                            })
-                        )
-                        .addClass("ss-htmleditorfield-file image");
+                    var container = settings.template.replace(/\{\{\s*(\S*)\s*\}\}/g, function(a,b) {
+                        return replacerbits[b] ? replacerbits[b] : '';
+                    });
+
                     content = content.replace(
                         match.original,
-                        jQuery("<figure/>")
-                            .append(el)
-                            .html()
+                        container
                     ); // Get next match
 
                     match = _ShortcodeSerialiser.match("semanticimage", false, content);
@@ -283,14 +276,14 @@ jQuery.entwine("ss", function ($) {
                 this.statusMessage(e, "bad");
             }
             // if result is a promise then just return the promise
-            if (typeof result == 'object' && $result.hasOwnProperty('then')) {
+            if (typeof result == 'object' && result.hasOwnProperty('then')) {
                 return result;
             }
-            // else it should be a bool 
+            // else it should be a bool
             if (result) {
                 this.close();
             }
-            // so return a empty promise that resolves it's self 
+            // so return a empty promise that resolves it's self
             return Promise.resolve();
         },
 
@@ -300,7 +293,6 @@ jQuery.entwine("ss", function ($) {
          * @returns {object}
          */
         getOriginalAttributes: function getOriginalAttributes() {
-
 
             var $field = this.getElement();
 
@@ -506,7 +498,6 @@ jQuery.entwine("ss", function ($) {
                             attrs.src = resampledImgSrc;
                         }
 
-
                         var extraData = that.getExtraData(); // Find the element we are replacing - either the img, it's wrapper parent,
                         var settings = editor.getConfig().wysiswg_semantic_image;
 
@@ -533,8 +524,6 @@ jQuery.entwine("ss", function ($) {
                         if (replacee && replacee.parents(settings.selectors.wrapper).is(".captionImage"))
                             replacee = replacee.parents(settings.selectors.wrapper); // Find the img node - either the existing img or a new one, and update it
 
-
-
                         var replacer = container; // If we're replacing something, and it's not with itself, do so
 
                         if (replacee) {
@@ -553,7 +542,6 @@ jQuery.entwine("ss", function ($) {
                                 }
                             );
                         }
-
 
                         editor.addUndo();
                         editor.repaint();

@@ -7,6 +7,7 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorConfig;
 use SilverStripe\View\Embed\Embeddable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\Debug;
+use SilverStripe\Assets\Image;
 
 /**
  * Provider for the [embed] shortcode tag used by the embedding service
@@ -72,35 +73,35 @@ class SemanticEmbeds
     public static function SemanticImage($arguments, $content = null, $parser = null, $tagName)
     {
 
-        if (!empty($content)) {
-            $serviceURL = $content;
-        } elseif (!empty($arguments['url'])) {
-            $serviceURL = $arguments['url'];
-        } else {
+        if (!isset($arguments['id'])) {
             return '';
         }
 
-        $embed = Injector::inst()->create(Embeddable::class, $serviceURL);
-        $embed = $embed->getEmbed();
+        $img = Image::get()->filter('ID', $arguments['id'])->first();
+        if (!$img) {
+            return '';
+        }
 
-        Debug::show($embed);
-        die;
+        if (isset($arguments['width']) && isset($arguments['height'])) {
+            $img = $img->Fit($arguments['width'], $arguments['height']);
+        }
 
         $replacements = [
             'classes' => $arguments['class'],
             'title' => $arguments['title'],
             'alt' => $arguments['alt'],
+            'width' => $arguments['width'],
+            'height' => $arguments['height'],
             'caption' => $arguments['caption'],
             'data-shortcode' => 'semanticimage',
-            'src' => $embed->getUrl(),
-            'data-id' => 'data-id'
+            'src' => $img->getURL(),
+            'data-id' => $arguments['id']
         ];
 
         $cmsConfig = HTMLEditorConfig::get('cms');
         $settings = $cmsConfig->getOption('wysiswg_semantic_image');
 
         $template = SemanticEmbeds::template($settings['template'], $replacements);
-
 
         return $template;
     }
