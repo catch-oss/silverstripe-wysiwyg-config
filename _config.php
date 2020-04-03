@@ -25,7 +25,7 @@ $cmsConfig::get('cms')->enablePlugins([
     'definitionlist' => $module->getResource('js/definitionlist/plugin.js')
 ]);
 
-$cmsConfig->setContentCSS([$module->getResource('js/plugin-style.css')]);
+$cmsConfig->setContentCSS([$module->getResource('js/definitionlist/plugin-style.css')]);
 
 // <figure class="c-picture captionImage Image leftAlone c-picture--left-offset" data-shortcode="image" data-id="11"><picture class="c-picture__item"> <img title="Grant Lilly Web" src="http://iod.loc/assets/Uploads/314f01e08b/Grant-Lilly-Web.jpg" alt="&quot;/" /> </picture>
 // <figcaption class="ss-htmleditorfield-file image"></figcaption>
