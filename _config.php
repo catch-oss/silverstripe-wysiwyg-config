@@ -96,3 +96,7 @@ $cmsConfig->setOption('wysiswg_semantic_video', [
 
 $cmsConfig->addButtonsToLine(2, 'semanticimage');
 $cmsConfig->addButtonsToLine(2, 'semanticvideo');
+
+ShortcodeParser::get('default')->register('semanticvideo', ['CatchDesign\SS\wysiwyg\Shortcodes\SemanticEmbeds', 'SemanticVideo']);
+ShortcodeParser::get('default')->register('semanticimage', ['CatchDesign\SS\wysiwyg\Shortcodes\SemanticEmbeds', 'SemanticImage']);
+
