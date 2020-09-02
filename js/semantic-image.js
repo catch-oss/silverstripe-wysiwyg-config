@@ -491,7 +491,7 @@ jQuery.entwine("ss", function ($) {
             var attrs = this.getAttributes();
             var that = this;
 
-            return new Promise((resolve, reject) => {
+            return new Promise(function (resolve, reject) {
 
                 // lets get a re sampled image.
                 $.get('/image-resample/resample',
@@ -532,8 +532,6 @@ jQuery.entwine("ss", function ($) {
                         var replacee = node && node.is("img,a") ? node : null;
                         if (replacee && replacee.parents(settings.selectors.wrapper).is(".captionImage"))
                             replacee = replacee.parents(settings.selectors.wrapper); // Find the img node - either the existing img or a new one, and update it
-
-
 
                         var replacer = container; // If we're replacing something, and it's not with itself, do so
 
