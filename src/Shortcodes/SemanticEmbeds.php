@@ -40,7 +40,7 @@ class SemanticEmbeds
     }
 
 
-    public static function SemanticVideo($arguments, $content = null, $parser = null, $tagName)
+    public static function SemanticVideo($arguments, $content = null, $parser = null, $tagName = null)
     {
         if (!empty($content)) {
             $serviceURL = $content;
@@ -69,7 +69,7 @@ class SemanticEmbeds
         return $template;
     }
 
-    public static function SemanticImage($arguments, $content = null, $parser = null, $tagName)
+    public static function SemanticImage($arguments, $content = null, $parser = null, $tagName = null)
     {
 
         if (!empty($content)) {
