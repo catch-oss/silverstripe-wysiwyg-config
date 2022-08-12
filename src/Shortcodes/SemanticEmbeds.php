@@ -7,6 +7,8 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorConfig;
 use SilverStripe\View\Embed\Embeddable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\Debug;
+use SilverStripe\View\Embed\EmbedContainer;
+use SilverStripe\View\Embed\EmbedResource;
 
 /**
  * Provider for the [embed] shortcode tag used by the embedding service
@@ -33,7 +35,6 @@ class SemanticEmbeds
 
     public static function template($template, $array)
     {
-
         return preg_replace_callback('/\{\{\s*(\S*)\s*\}\}/', function ($matches) use ($array) {
             return ((isset($array[$matches[1]])) ? $array[$matches[1]] : '');
         }, $template);
@@ -51,15 +52,23 @@ class SemanticEmbeds
         }
 
         $embed = Injector::inst()->create(Embeddable::class, $serviceURL);
-        $embed = $embed->getEmbed();
 
+        if (is_a($embed, EmbedResource::class)) {
+            $embed = $embed->getEmbed();
+            $code = $embed->getCode();
+        } elseif (is_a($embed, EmbedContainer::class)) {
+            $extractor = $embed->getExtractor();
+            $code = $extractor->code;
+        } else {
+            return '';
+        }
 
         $replacements = [
-            'classes' => $arguments['class'],
-            'video' => $embed->getCode(),
-            'caption' => $arguments['caption'],
+            'classes' => $arguments['class'] ?? '',
+            'video' => $code,
+            'caption' => $arguments['caption'] ?? '',
             'data-shortcode' => 'semanticvideo',
-            'data-url' => $arguments['url']
+            'data-url' => $arguments['url'] ?? ''
         ];
 
         $cmsConfig = HTMLEditorConfig::get('cms');
@@ -81,18 +90,26 @@ class SemanticEmbeds
         }
 
         $embed = Injector::inst()->create(Embeddable::class, $serviceURL);
-        $embed = $embed->getEmbed();
 
-        Debug::show($embed);
-        die;
+        if (is_a($embed, EmbedResource::class)) {
+            $embed = $embed->getEmbed();
+            $url = $embed->getUrl();
+        } elseif (is_a($embed, EmbedContainer::class)) {
+            $url = $embed->url;
+        } else {
+            return '';
+        }
+
+        // Debug::show($embed);
+        // die;
 
         $replacements = [
-            'classes' => $arguments['class'],
-            'title' => $arguments['title'],
-            'alt' => $arguments['alt'],
-            'caption' => $arguments['caption'],
+            'classes' => $arguments['class'] ?? '',
+            'title' => $arguments['title'] ?? '',
+            'alt' => $arguments['alt'] ?? '',
+            'caption' => $arguments['caption'] ?? '',
             'data-shortcode' => 'semanticimage',
-            'src' => $embed->getUrl(),
+            'src' => $url,
             'data-id' => 'data-id'
         ];
 
